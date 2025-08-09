@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Details — GlassFlix</title>
+  <link rel="manifest" href="./manifest.webmanifest" />
+  <link rel="preconnect" href="https://image.tmdb.org" crossorigin>
+  <link rel="preconnect" href="https://api.themoviedb.org" crossorigin>
+  <link rel="stylesheet" href="styles/theme.css" />
+  <link rel="stylesheet" href="styles/glass.css" />
+  <link rel="stylesheet" href="styles/layout.css" />
+  <link rel="stylesheet" href="styles/animations.css" />
+</head>
+<body>
+  <header class="site-header"></header>
+
+  <section id="hero" class="hero">
+    <div class="hero-bg"></div>
+    <div class="container hero-overlay">
+      <div class="content-glass">
+        <div style="display:flex; gap:1rem; align-items:center; justify-content:space-between; flex-wrap:wrap;">
+          <div>
+            <div class="tag">Rating: <span id="rating">–</span></div>
+            <h1 class="title">Loading…</h1>
+            <p class="subtitle"></p>
+            <div id="meta" class="muted"></div>
+          </div>
+          <div class="header-actions">
+            <a href="#watch" class="btn btn-primary">▶ Watch Now</a>
+            <button id="save-btn" class="btn btn-secondary">+ My List</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <main class="container" style="padding: 1rem 0 2rem;">
+    <div class="grid-two">
+      <section id="watch" class="section">
+        <h2>▶ Player</h2>
+        <div id="watch-panel" class="filters" style="margin:.5rem 0 .8rem">
+          <div class="pill">Auto</div>
+          <select id="episode-select" class="pill" title="Episode selector (TV only)"></select>
+        </div>
+        <div id="player" class="player glass"></div>
+      </section>
+      <section class="section">
+        <h2>Cast</h2>
+        <div id="cast" class="filters"></div>
+      </section>
+    </div>
+
+    <section id="recommend" class="section">
+      <h2>Because you watched…</h2>
+      <div class="cards"></div>
+    </section>
+  </main>
+
+  <footer class="container footer">
+    <div class="footer-links">
+      <span>© <span id="year"></span> GlassFlix</span>
+      <a class="link-underline" href="my-list.html">My List</a>
+      <a class="link-underline" href="index.html">Home</a>
+    </div>
+  </footer>
+
+  <script type="module" src="./scripts/app.js"></script>
+  <script type="module" src="./scripts/details.js"></script>
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+</body>
+</html>
