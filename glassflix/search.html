@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Search & Browse — GlassFlix</title>
+  <link rel="manifest" href="./manifest.webmanifest" />
+  <link rel="preconnect" href="https://image.tmdb.org" crossorigin>
+  <link rel="preconnect" href="https://api.themoviedb.org" crossorigin>
+  <link rel="stylesheet" href="styles/theme.css" />
+  <link rel="stylesheet" href="styles/glass.css" />
+  <link rel="stylesheet" href="styles/layout.css" />
+  <link rel="stylesheet" href="styles/animations.css" />
+</head>
+<body>
+  <header class="site-header"></header>
+  <main class="container" style="padding: 1rem 0 2rem;">
+    <section class="section">
+      <h2>🔎 Search & Browse</h2>
+      <form id="filters-form" class="filters glass" style="padding:.6rem;">
+        <input id="q" class="pill" placeholder="Query (optional)"/>
+        <select id="type" class="pill">
+          <option value="all">All</option>
+          <option value="movie">Movies</option>
+          <option value="tv">TV Shows</option>
+        </select>
+        <select id="genre" class="pill"><option>Loading...</option></select>
+        <input id="year" class="pill" type="number" min="1900" max="2100" placeholder="Year"/>
+        <select id="sort" class="pill">
+          <option value="popularity.desc">Popularity</option>
+          <option value="vote_average.desc">Rating</option>
+          <option value="primary_release_date.desc">Release Date</option>
+        </select>
+      </form>
+    </section>
+    <section class="section">
+      <div id="results" class="cards"></div>
+      <div id="sentinel" style="height:1px"></div>
+    </section>
+  </main>
+  <footer class="container footer">
+    <div class="footer-links">
+      <span>© <span id="year"></span> GlassFlix</span>
+      <a class="link-underline" href="my-list.html">My List</a>
+      <a class="link-underline" href="index.html">Home</a>
+    </div>
+  </footer>
+
+  <script type="module" src="./scripts/app.js"></script>
+  <script type="module" src="./scripts/search.js"></script>
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+</body>
+</html>

@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>My List — GlassFlix</title>
+  <link rel="manifest" href="./manifest.webmanifest" />
+  <link rel="preconnect" href="https://image.tmdb.org" crossorigin>
+  <link rel="stylesheet" href="styles/theme.css" />
+  <link rel="stylesheet" href="styles/glass.css" />
+  <link rel="stylesheet" href="styles/layout.css" />
+</head>
+<body>
+  <header class="site-header"></header>
+  <main class="container" style="padding: 1rem 0 2rem;">
+    <section class="section">
+      <h2>❤️ My List</h2>
+      <div id="list" class="cards"></div>
+    </section>
+  </main>
+  <footer class="container footer">
+    <div class="footer-links">
+      <span>© <span id="year"></span> GlassFlix</span>
+      <a class="link-underline" href="index.html">Home</a>
+    </div>
+  </footer>
+
+  <script type="module">
+    import { getAll } from './scripts/store.js';
+    import { createCard, lazyLoadImages } from './scripts/ui.js';
+    const root = document.getElementById('list');
+    const items = getAll();
+    if (items.length === 0) { root.innerHTML = '<div class="content-glass">Your list is empty.</div>'; }
+    for (const item of items) root.appendChild(createCard(item));
+    lazyLoadImages(root);
+    document.getElementById('year').textContent = new Date().getFullYear();
+  </script>
+  <script type="module" src="./scripts/app.js"></script>
+</body>
+</html>
