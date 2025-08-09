@@ -1,6 +1,8 @@
 import { getAll } from './store.js';
 import { unreadCount as notifCount, renderCenter } from './notifications.js';
 import { showModal } from './ui.js';
+import { subscribeSettings } from './settings.js';
+import { startNotifications } from './notifications.js';
 
 function renderHeader() {
   const header = document.querySelector('header.site-header');
@@ -52,7 +54,6 @@ function renderDock() {
       <a href="search.html" title="Browse"><span class="ico">🔎</span><span class="lbl">Browse</span></a>
       <a href="my-list.html" title="My List"><span class="ico">❤️</span><span class="lbl">My List</span></a>
       <button id="dock-bell" title="Notifications" style="position:relative"><span class="ico">🔔</span><span class="lbl">Alerts</span><span id="dock-badge" class="badge-dot" style="display:none"></span></button>
-      <a href="admin.html" title="Admin"><span class="ico">🛠️</span><span class="lbl">Admin</span></a>
       <a href="status.html" title="Status"><span class="ico">📈</span><span class="lbl">Status</span></a>
     </div>`;
   document.body.appendChild(dock);
@@ -61,7 +62,7 @@ function renderDock() {
 function wireDock() {
   const bell = document.getElementById('dock-bell');
   const badge = document.getElementById('dock-badge');
-  const refresh = () => { const c = notifCount(); badge.style.display = c > 0 ? 'block' : 'none'; };
+  const refresh = () => { const c = notifCount(); badge.style.display = c > 0 ? 'block' : 'none'; badge.title = c>0?`${c} unread`:'No unread'; };
   refresh();
   window.addEventListener('notify:update', refresh);
   bell?.addEventListener('click', () => {
@@ -73,19 +74,21 @@ function wireDock() {
 }
 
 function maintenanceBanner() {
-  const raw = localStorage.getItem('site:settings');
-  if (!raw) return;
-  try {
-    const s = JSON.parse(raw);
+  let bar = null;
+  subscribeSettings((s) => {
     if (s.maintenance) {
-      const bar = document.createElement('div');
-      bar.className = 'nav';
-      bar.style.position = 'fixed'; bar.style.top = '0'; bar.style.width = '100%'; bar.style.zIndex = '90';
+      if (!bar) {
+        bar = document.createElement('div');
+        bar.className = 'nav';
+        bar.style.position = 'fixed'; bar.style.top = '0'; bar.style.width = '100%'; bar.style.zIndex = '90';
+        document.body.appendChild(bar);
+        document.body.style.paddingTop = '48px';
+      }
       bar.innerHTML = `<div class="container" style="padding:.4rem 0; color: #001018"><div class="content-glass" style="background:linear-gradient(180deg,var(--accent),var(--accent-2)); color:#001018; text-align:center; font-weight:700">${s.maintenanceMessage || 'Maintenance mode active'}</div></div>`;
-      document.body.appendChild(bar);
-      document.body.style.paddingTop = '48px';
+    } else if (bar) {
+      bar.remove(); bar = null; document.body.style.paddingTop = '';
     }
-  } catch {}
+  });
 }
 
 function registerSW() {
@@ -102,6 +105,7 @@ export function boot() {
   renderDock();
   wireDock();
   maintenanceBanner();
+  startNotifications();
   registerSW();
 }
 
