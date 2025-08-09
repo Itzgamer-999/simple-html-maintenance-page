@@ -24,7 +24,7 @@ function gate() {
 
 async function renderIncidents() {
   try {
-    const { db, collection, onSnapshot, query, orderBy, addDoc, serverTimestamp, deleteDoc, doc, updateDoc, arrayUnion, Timestamp } = await getFirebase().then(({db}) => import('https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js').then(m => ({...m, db})));
+    const { db, collection, onSnapshot, query, orderBy, addDoc, serverTimestamp, deleteDoc, doc, updateDoc, arrayUnion, Timestamp, getDoc, setDoc } = await getFirebase().then(({db}) => import('https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js').then(m => ({...m, db})));
     const q = query(collection(db, 'incidents'), orderBy('createdAt', 'desc'));
     onSnapshot(q, (snap) => {
       const root = document.getElementById('inc-list');
@@ -36,7 +36,7 @@ async function renderIncidents() {
             <div style=\"display:flex;justify-content:space-between;align-items:center\"><div><span class=\"pill\">${inc.severity}</span> <strong>${inc.title}</strong> ${inc.resolved?'<span class=\"pill\" style=\"margin-left:.3rem\">resolved</span>':''}</div>
             <div>
               <button data-id=\"${d.id}\" class=\"btn btn-secondary upd\">Add Update</button>
-              ${inc.resolved?'':`<button data-id=\"${d.id}\" class=\"btn btn-secondary res\">Resolve</button>`}
+              ${inc.resolved?`<button data-id=\"${d.id}\" class=\"btn btn-secondary arc\">Archive</button>`:`<button data-id=\"${d.id}\" class=\"btn btn-secondary res\">Resolve</button>`}
               <button data-id=\"${d.id}\" class=\"btn btn-secondary del\">Delete</button>
             </div></div>
             <div style=\"color:var(--muted); font-size:.9rem; margin-top:.3rem\">${inc.message}</div>
@@ -55,6 +55,13 @@ async function renderIncidents() {
         const message = prompt('Update message');
         if (!status || !message) return;
         await updateDoc(doc(db, 'incidents', btn.dataset.id), { updates: arrayUnion({ status, message, time: serverTimestamp() }), status });
+      }));
+      root.querySelectorAll('.arc').forEach(btn => btn.addEventListener('click', async () => {
+        const id = btn.dataset.id;
+        const src = await (await getDoc(doc(db, 'incidents', id))).data();
+        if (!src) return;
+        await setDoc(doc(db, 'incidents_archive', id), { ...src, archivedAt: serverTimestamp() });
+        await deleteDoc(doc(db, 'incidents', id));
       }));
     });
     document.getElementById('post-incident').addEventListener('click', async () => {

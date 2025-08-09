@@ -14,7 +14,7 @@ async function checkVidSrc() {
     return !!res; // opaque is fine
   } catch { return false; }
 }
-function pill(el, ok) { el.innerHTML = ok ? '<span class="pill" style="background:rgba(0,255,150,.2);border-color:#2dd4bf">Online</span>' : '<span class="pill" style="background:rgba(255,0,0,.2);border-color:#f87171">Offline</span>'; }
+function pill(el, ok) { if (!el) return; el.innerHTML = ok ? '<span class="pill" style="background:rgba(0,255,150,.2);border-color:#2dd4bf">Online</span>' : '<span class="pill" style="background:rgba(255,0,0,.2);border-color:#f87171">Offline</span>'; }
 
 async function checkSW() {
   if (!('serviceWorker' in navigator)) return false;
@@ -34,6 +34,7 @@ function cacheSize() {
 function sparkline(id, key) {
   let arr = []; try { arr = JSON.parse(localStorage.getItem(key) || '[]'); } catch {}
   const el = document.getElementById(id);
+  if (!el) return;
   const width = 160, height = 32, pad = 2;
   const points = arr.map(x => x[1]);
   const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
@@ -66,29 +67,44 @@ function sparkline(id, key) {
   el.innerHTML = ''; el.appendChild(svg);
 }
 
+function withinWindow(nowMs, inc) {
+  const start = inc.startAt?.toDate ? inc.startAt.toDate().getTime() : null;
+  const end = inc.endAt?.toDate ? inc.endAt.toDate().getTime() : null;
+  if (start && end) return nowMs >= start && nowMs <= end;
+  if (start && !end) return nowMs >= start;
+  if (!start && end) return nowMs <= end;
+  return true; // no schedule means always visible unless resolved rule applies
+}
+
 async function incidentsFeed() {
   try {
     const { db, collection, onSnapshot, query, orderBy, limit } = await getFirebase().then(({db}) => import('https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js').then(m => ({...m, db})));
-    const q = query(collection(db, 'incidents'), orderBy('createdAt', 'desc'), limit(10));
+    const q = query(collection(db, 'incidents'), orderBy('createdAt', 'desc'), limit(25));
     onSnapshot(q, (snap) => {
-      const list = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      const now = Date.now();
+      const raw = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      const list = raw.filter(inc => !inc.resolved || withinWindow(now, inc));
       const root = document.getElementById('incidents');
-      if (list.length === 0) { root.innerHTML = '<div class="content-glass">No recent incidents.</div>'; return; }
+      if (!root) return;
+      if (list.length === 0) { root.innerHTML = '<div class="content-glass">No current incidents.</div>'; return; }
       root.innerHTML = list.map(inc => `
         <div class="content-glass" style="margin-bottom:.5rem">
           <div class="filters" style="justify-content:space-between">
             <div>
               <span class="pill">${inc.severity || 'info'}</span>
               <strong style="margin-left:.5rem">${inc.title || 'Incident'}</strong>
+              ${inc.resolved?'<span class="pill" style="margin-left:.3rem">resolved</span>':''}
             </div>
             <div style="color:var(--muted); font-size:.85rem">${inc.createdAt?.toDate ? inc.createdAt.toDate().toLocaleString() : ''}</div>
           </div>
           <div style="color:var(--muted); margin-top:.4rem">${inc.message || ''}</div>
+          ${inc.startAt?.toDate ? `<div style="margin-top:.3rem">Scheduled: ${inc.startAt.toDate().toLocaleString()} → ${inc.endAt?.toDate?inc.endAt.toDate().toLocaleString():''}</div>`:''}
           ${inc.status ? `<div style="margin-top:.4rem"><span class="pill">${inc.status}</span></div>` : ''}
         </div>`).join('');
     });
   } catch {
-    document.getElementById('incidents').innerHTML = '<div class="content-glass">Incidents unavailable (no Firebase).</div>';
+    const root = document.getElementById('incidents');
+    if (root) root.innerHTML = '<div class="content-glass">Incidents unavailable (no Firebase).</div>';
   }
 }
 
@@ -100,8 +116,8 @@ async function incidentsFeed() {
 
   pill(tmdb, await checkTMDB());
   pill(vidsrc, await checkVidSrc());
-  pill(sw, await checkSW());
-  cache.innerHTML = `Cache entries: <span class="pill">${cacheSize()}</span>`;
+  if (sw) pill(sw, await checkSW());
+  if (cache) cache.innerHTML = `Cache entries: <span class="pill">${cacheSize()}</span>`;
 
   sparkline('spark-tmdb', 'uptime:tmdb');
   sparkline('spark-vidsrc', 'uptime:vidsrc');
