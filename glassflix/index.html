@@ -15,37 +15,43 @@
 <body>
   <header class="site-header"></header>
 
-  <main class="container" style="padding: 1rem 0 2rem;">
+  <main class="container" style="padding: 1rem 0 2.2rem;">
+    <div class="large-title">
+      <h1>GlassFlix</h1>
+      <div class="subtitle">Browse trending movies and shows</div>
+    </div>
+
     <section class="section">
       <div id="site-status-pill"></div>
     </section>
-    <section id="trending" class="section">
-      <h2>🔥 Trending Today</h2>
-      <div class="cards"></div>
+
+    <section id="trending" class="section group">
+      <div class="group-header"><h2>🔥 Trending Today</h2></div>
+      <div class="group-body"><div class="cards"></div></div>
     </section>
-    <section id="nowplaying" class="section">
-      <h2>🎬 Now Playing</h2>
-      <div class="cards"></div>
+    <section id="nowplaying" class="section group">
+      <div class="group-header"><h2>🎬 Now Playing</h2></div>
+      <div class="group-body"><div class="cards"></div></div>
     </section>
-    <section id="ontheair" class="section">
-      <h2>📺 Currently Airing</h2>
-      <div class="cards"></div>
+    <section id="ontheair" class="section group">
+      <div class="group-header"><h2>📺 Currently Airing</h2></div>
+      <div class="group-body"><div class="cards"></div></div>
     </section>
-    <section id="popular-movies" class="section">
-      <h2>🍿 Popular Movies</h2>
-      <div class="cards"></div>
+    <section id="popular-movies" class="section group">
+      <div class="group-header"><h2>🍿 Popular Movies</h2></div>
+      <div class="group-body"><div class="cards"></div></div>
     </section>
-    <section id="popular-tv" class="section">
-      <h2>📡 Popular TV</h2>
-      <div class="cards"></div>
+    <section id="popular-tv" class="section group">
+      <div class="group-header"><h2>📡 Popular TV</h2></div>
+      <div class="group-body"><div class="cards"></div></div>
     </section>
-    <section id="toprated-movies" class="section">
-      <h2>🏆 Top Rated Movies</h2>
-      <div class="cards"></div>
+    <section id="toprated-movies" class="section group">
+      <div class="group-header"><h2>🏆 Top Rated Movies</h2></div>
+      <div class="group-body"><div class="cards"></div></div>
     </section>
-    <section id="toprated-tv" class="section">
-      <h2>🏆 Top Rated TV</h2>
-      <div class="cards"></div>
+    <section id="toprated-tv" class="section group">
+      <div class="group-header"><h2>🏆 Top Rated TV</h2></div>
+      <div class="group-body"><div class="cards"></div></div>
     </section>
   </main>
 
@@ -61,6 +67,10 @@
   <script type="module" src="./scripts/home.js"></script>
   <script>
     document.getElementById('year').textContent = new Date().getFullYear();
+    const title = document.querySelector('.large-title');
+    let last = 0; window.addEventListener('scroll', () => {
+      const y = window.scrollY; if (Math.abs(y - last) < 6) return; last = y; title.classList.toggle('shrink', y > 24);
+    });
   </script>
 </body>
 </html>
