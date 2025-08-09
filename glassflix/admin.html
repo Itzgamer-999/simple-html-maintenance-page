@@ -59,6 +59,26 @@
         </div>
 
         <div class="content-glass" style="margin-top:1rem">
+          <h3>Incidents</h3>
+          <div class="grid-two">
+            <div>
+              <input id="incTitle" class="pill" placeholder="Title" />
+              <input id="incMessage" class="pill" placeholder="Message" />
+              <select id="incSeverity" class="pill">
+                <option value="info">info</option>
+                <option value="minor">minor</option>
+                <option value="major">major</option>
+                <option value="critical">critical</option>
+              </select>
+              <input id="incStatus" class="pill" placeholder="Status (e.g., investigating, monitoring)" />
+              <div style="height:.6rem"></div>
+              <button id="post-incident" class="btn btn-primary">Post Incident</button>
+            </div>
+            <div id="inc-list" style="max-height:40vh; overflow:auto"></div>
+          </div>
+        </div>
+
+        <div class="content-glass" style="margin-top:1rem">
           <h3>Security</h3>
           <input id="newPin" class="pill" type="password" placeholder="New PIN" />
           <button id="save-pin" class="btn">Update PIN</button>

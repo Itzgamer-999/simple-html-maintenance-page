@@ -2,6 +2,7 @@ import { getMovieDetails, getTVDetails, imgPath } from './api.js';
 import { injectPlayer } from './player.js';
 import { toggle as toggleSave, isSaved } from './store.js';
 import { createCard, lazyLoadImages, toast } from './ui.js';
+import { createRoom, joinRoom } from './party.js';
 
 function params() { const u = new URL(location.href); return { id: u.searchParams.get('id'), type: u.searchParams.get('type') }; }
 
@@ -50,6 +51,32 @@ async function load() {
     });
     if (seasons[0]) injectPlayer(player, { mediaType: 'tv', tmdbId: id, season: seasons[0].season_number, episode: 1 });
   }
+
+  // Watch Party
+  const chatBox = document.getElementById('party-chat');
+  const chatLog = document.getElementById('chat-log');
+  const partyCreate = document.getElementById('party-create');
+  const partyJoin = document.getElementById('party-join');
+  const partyIdInput = document.getElementById('party-id');
+
+  partyCreate.addEventListener('click', async () => {
+    try {
+      const roomId = await createRoom({ mediaType: type, tmdbId: id });
+      partyIdInput.value = roomId; toast('Party created');
+    } catch { toast('Failed to create room'); }
+  });
+  partyJoin.addEventListener('click', async () => {
+    const roomId = partyIdInput.value.trim(); if (!roomId) return toast('Enter room ID');
+    try {
+      const sess = await joinRoom(roomId);
+      chatBox.style.display = 'block';
+      const render = (msgs) => { chatLog.innerHTML = msgs.map(m => `<div><strong>${m.user||'anon'}:</strong> ${m.text}</div>`).join(''); chatLog.scrollTop = chatLog.scrollHeight; };
+      const stopChat = sess.onChat(render);
+      const nameEl = document.getElementById('chat-name');
+      const textEl = document.getElementById('chat-text');
+      document.getElementById('chat-send').onclick = () => { sess.sendChat(nameEl.value || 'anon', textEl.value); textEl.value=''; };
+    } catch { toast('Failed to join room'); }
+  });
 
   // Recommendations
   const rec = document.getElementById('recommend');

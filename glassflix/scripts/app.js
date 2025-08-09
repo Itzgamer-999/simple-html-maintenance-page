@@ -91,6 +91,30 @@ function maintenanceBanner() {
   });
 }
 
+function startUptimeProbe() {
+  const MAX = 288; // 24h @ 5m
+  const save = (key, ok) => {
+    let arr = []; try { arr = JSON.parse(localStorage.getItem(key) || '[]'); } catch {}
+    arr.push([Date.now(), ok ? 1 : 0]);
+    if (arr.length > MAX) arr = arr.slice(arr.length - MAX);
+    try { localStorage.setItem(key, JSON.stringify(arr)); } catch {}
+  };
+  const ping = async () => {
+    try {
+      const url = document.documentElement.getAttribute('data-theme') === 'noop' ? '' : '';
+      // TMDB
+      const tmdbOk = await fetch('https://api.themoviedb.org/3/configuration', { mode: 'no-cors' }).then(() => true).catch(() => false);
+      save('uptime:tmdb', tmdbOk);
+      // VidSrc
+      const vsOk = await fetch('https://vidsrc.xyz/', { mode: 'no-cors' }).then(() => true).catch(() => false);
+      save('uptime:vidsrc', vsOk);
+    } catch {}
+  };
+  // initial + interval
+  ping();
+  setInterval(ping, 5 * 60 * 1000);
+}
+
 function registerSW() {
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('./sw.js').catch(() => {});
@@ -106,6 +130,7 @@ export function boot() {
   wireDock();
   maintenanceBanner();
   startNotifications();
+  startUptimeProbe();
   registerSW();
 }
 
