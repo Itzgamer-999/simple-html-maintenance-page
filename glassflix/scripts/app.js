@@ -75,7 +75,13 @@ function wireDock() {
 
 function maintenanceBanner() {
   let bar = null;
+  const whitelist = ['admin.html', 'status.html', 'maintenance.html'];
   subscribeSettings((s) => {
+    const isWhitelisted = whitelist.some(w => location.pathname.endsWith(w));
+    if (s.maintenance && !isWhitelisted) {
+      location.replace('maintenance.html');
+      return;
+    }
     if (s.maintenance) {
       if (!bar) {
         bar = document.createElement('div');

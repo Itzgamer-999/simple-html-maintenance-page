@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Maintenance — GlassFlix</title>
+  <link rel="stylesheet" href="styles/theme.css" />
+  <link rel="stylesheet" href="styles/glass.css" />
+  <link rel="stylesheet" href="styles/layout.css" />
+</head>
+<body>
+  <main class="container" style="min-height:100dvh; display:grid; place-items:center;">
+    <div class="content-glass anim-pop" style="max-width:620px; text-align:center;">
+      <img src="assets/logo.svg" alt="GlassFlix" style="width:64px; height:64px; margin-bottom:.6rem"/>
+      <h1 style="margin:.2rem 0">We’ll be back soon</h1>
+      <p id="mmsg" style="color:var(--muted)">Maintenance in progress.</p>
+      <div style="margin-top:1rem">
+        <a class="btn btn-secondary" href="status.html">View Status</a>
+      </div>
+    </div>
+  </main>
+  <script type="module">
+    import { subscribeSettings } from './scripts/settings.js';
+    subscribeSettings((s) => {
+      document.getElementById('mmsg').textContent = s.maintenanceMessage || 'Maintenance in progress.';
+      if (!s.maintenance) location.replace('index.html');
+    });
+  </script>
+</body>
+</html>

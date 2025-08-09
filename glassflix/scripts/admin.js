@@ -88,6 +88,7 @@ function initPanel() {
     document.getElementById('maintenanceMessage').value = s.maintenanceMessage || '';
     document.getElementById('blockPopups').checked = !!s.blockPopups;
     document.getElementById('defaultTheme').value = s.defaultTheme || (localStorage.getItem('theme') || 'dark');
+    document.getElementById('siteStatus').value = s.siteStatus || (s.maintenance ? 'maintenance' : 'operational');
   });
 
   document.getElementById('save-settings').addEventListener('click', async () => {
@@ -95,7 +96,8 @@ function initPanel() {
       maintenance: document.getElementById('maintenance').checked,
       maintenanceMessage: document.getElementById('maintenanceMessage').value,
       blockPopups: document.getElementById('blockPopups').checked,
-      defaultTheme: document.getElementById('defaultTheme').value
+      defaultTheme: document.getElementById('defaultTheme').value,
+      siteStatus: document.getElementById('siteStatus').value
     };
     await saveSettings(ns);
     if (ns.defaultTheme) { localStorage.setItem('theme', ns.defaultTheme); document.documentElement.setAttribute('data-theme', ns.defaultTheme); }

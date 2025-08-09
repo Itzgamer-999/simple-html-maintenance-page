@@ -70,3 +70,20 @@ export async function getGenres() {
   ]);
   return { movie: movie.genres || [], tv: tv.genres || [] };
 }
+
+export async function getPopularMovies() {
+  const url = withKey(`${TMDB_BASE}/movie/popular`);
+  return cachedFetchJson('movie_popular', url, { headers: authHeaders() }, 1000 * 60 * 5);
+}
+export async function getPopularTV() {
+  const url = withKey(`${TMDB_BASE}/tv/popular`);
+  return cachedFetchJson('tv_popular', url, { headers: authHeaders() }, 1000 * 60 * 5);
+}
+export async function getTopRatedMovies() {
+  const url = withKey(`${TMDB_BASE}/movie/top_rated`);
+  return cachedFetchJson('movie_top_rated', url, { headers: authHeaders() }, 1000 * 60 * 10);
+}
+export async function getTopRatedTV() {
+  const url = withKey(`${TMDB_BASE}/tv/top_rated`);
+  return cachedFetchJson('tv_top_rated', url, { headers: authHeaders() }, 1000 * 60 * 10);
+}
