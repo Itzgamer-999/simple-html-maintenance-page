@@ -1,5 +1,4 @@
 import { getMovieDetails, getTVDetails, imgPath } from './api.js';
-import { injectPlayer } from './player.js';
 import { toggle as toggleSave, isSaved } from './store.js';
 import { createCard, lazyLoadImages, toast } from './ui.js';
 
@@ -9,7 +8,6 @@ async function load() {
   const { id, type } = params();
   const data = type === 'movie' ? await getMovieDetails(id) : await getTVDetails(id);
 
-  // Hero
   const hero = document.getElementById('hero');
   hero.querySelector('.hero-bg').style.backgroundImage = `url(${imgPath(data.backdrop_path, 'w780')})`;
   hero.querySelector('.title').textContent = data.title || data.name;
@@ -30,28 +28,19 @@ async function load() {
     toast(added ? 'Added to My List' : 'Removed from My List');
   });
 
-  // Cast
+  const watchBtn = document.getElementById('watch-now');
+  if (watchBtn) {
+    watchBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      if (type === 'movie') location.href = `player.html?type=movie&tmdb=${id}`;
+      else location.href = `player.html?type=tv&tmdb=${id}&season=1&episode=1`;
+    });
+  }
+
   const cast = (data.credits?.cast || data.aggregate_credits?.cast || []).slice(0, 12);
   const castEl = document.getElementById('cast');
   castEl.innerHTML = cast.map(p => `<span class="pill">${p.name}</span>`).join('');
 
-  // Player
-  const player = document.getElementById('player');
-  const panel = document.getElementById('watch-panel');
-  if (type === 'movie') {
-    injectPlayer(player, { mediaType: 'movie', tmdbId: id });
-  } else {
-    const select = document.getElementById('episode-select');
-    const seasons = (data.seasons || []).filter(s => s.season_number > 0);
-    select.innerHTML = seasons.map(s => `<option value="${s.season_number}-1">S${s.season_number} E1</option>`).join('');
-    select.addEventListener('change', () => {
-      const [s, e] = select.value.split('-').map(Number);
-      injectPlayer(player, { mediaType: 'tv', tmdbId: id, season: s, episode: e });
-    });
-    if (seasons[0]) injectPlayer(player, { mediaType: 'tv', tmdbId: id, season: seasons[0].season_number, episode: 1 });
-  }
-
-  // Recommendations
   const rec = document.getElementById('recommend');
   const list = (data.recommendations?.results || data.similar?.results || []).slice(0, 18);
   const grid = rec.querySelector('.cards');

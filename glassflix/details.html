@@ -27,7 +27,7 @@
             <div id="meta" class="muted"></div>
           </div>
           <div class="header-actions">
-            <a href="#watch" class="btn btn-primary">▶ Watch Now</a>
+            <a id="watch-now" href="#" class="btn btn-primary">▶ Watch Now</a>
             <button id="save-btn" class="btn btn-secondary">+ My List</button>
           </div>
         </div>
@@ -36,20 +36,10 @@
   </section>
 
   <main class="container" style="padding: 1rem 0 2rem;">
-    <div class="grid-two">
-      <section id="watch" class="section">
-        <h2>▶ Player</h2>
-        <div id="watch-panel" class="filters" style="margin:.5rem 0 .8rem">
-          <div class="pill">Auto</div>
-          <select id="episode-select" class="pill" title="Episode selector (TV only)"></select>
-        </div>
-        <div id="player" class="player glass"></div>
-      </section>
-      <section class="section">
-        <h2>Cast</h2>
-        <div id="cast" class="filters"></div>
-      </section>
-    </div>
+    <section class="section">
+      <h2>Cast</h2>
+      <div id="cast" class="filters"></div>
+    </section>
 
     <section id="recommend" class="section">
       <h2>Because you watched…</h2>

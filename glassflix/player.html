@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Player — GlassFlix</title>
+  <link rel="stylesheet" href="styles/theme.css" />
+  <link rel="stylesheet" href="styles/glass.css" />
+  <link rel="stylesheet" href="styles/layout.css" />
+  <link rel="stylesheet" href="styles/animations.css" />
+</head>
+<body>
+  <header class="site-header"></header>
+  <main class="container" style="padding: 1rem 0 2rem;">
+    <section class="section">
+      <div class="content-glass" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:.6rem">
+        <div>
+          <h2 style="margin:.2rem 0">Player</h2>
+          <div style="color:var(--muted); font-size:.95rem">You may be redirected to an external provider.</div>
+        </div>
+        <div class="filters">
+          <select id="dsLang" class="pill"><option value="">Subs: Auto</option><option value="en">English</option><option value="de">Deutsch</option><option value="fr">Français</option></select>
+          <label class="filters" style="align-items:center; gap:.4rem"><input id="autoplay" type="checkbox"/> Autoplay</label>
+          <label class="filters" style="align-items:center; gap:.4rem"><input id="autonext" type="checkbox"/> Autonext</label>
+          <button id="reload" class="btn">Reload</button>
+        </div>
+      </div>
+    </section>
+    <section class="section">
+      <div id="player" class="player glass"></div>
+    </section>
+  </main>
+  <script type="module">
+    import { injectPlayer } from './scripts/player.js';
+    import './scripts/app.js';
+    const u = new URL(location.href);
+    const type = u.searchParams.get('type') || 'movie';
+    const tmdb = u.searchParams.get('tmdb');
+    const season = Number(u.searchParams.get('season') || '1');
+    const episode = Number(u.searchParams.get('episode') || '1');
+    const root = document.getElementById('player');
+    function load() {
+      const opts = {
+        dsLang: document.getElementById('dsLang').value || undefined,
+        autoplay: document.getElementById('autoplay').checked || undefined,
+        autonext: document.getElementById('autonext').checked || undefined
+      };
+      injectPlayer(root, { mediaType: type, tmdbId: tmdb, season, episode, opts });
+    }
+    document.getElementById('reload').addEventListener('click', load);
+    load();
+  </script>
+</body>
+</html>
