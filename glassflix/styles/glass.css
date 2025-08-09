@@ -61,6 +61,6 @@
 
 .content-glass { padding: 1rem; border-radius: var(--radius); border: 1px solid var(--glass-border); background: linear-gradient(180deg, rgba(255,255,255,.12), rgba(255,255,255,.06)); }
 
-.modal-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,.55); display: none; place-items: center; z-index: 60; }
+.modal-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,.6); display: none; place-items: center; z-index: 120; padding: 1rem; }
 .modal { width: min(560px, 92%); }
 .modal-backdrop.show { display: grid; }

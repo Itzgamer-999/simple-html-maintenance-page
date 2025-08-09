@@ -82,7 +82,7 @@ export function showModal(html) {
   if (!backdrop) {
     backdrop = document.createElement('div');
     backdrop.className = 'modal-backdrop';
-    backdrop.innerHTML = `<div class="modal glass"><div class="content" style="padding:1rem"></div><div style="display:flex;justify-content:flex-end;padding:.6rem"><button class="btn" id="modal-close">Close</button></div></div>`;
+    backdrop.innerHTML = `<div class="modal glass anim-pop"><div class="content" style="padding:1rem"></div><div style="display:flex;justify-content:flex-end;padding:.6rem"><button class="btn" id="modal-close">Close</button></div></div>`;
     document.body.appendChild(backdrop);
     backdrop.addEventListener('click', (e) => { if (e.target === backdrop) hideModal(); });
     backdrop.querySelector('#modal-close').addEventListener('click', hideModal);
@@ -93,4 +93,26 @@ export function showModal(html) {
 export function hideModal() {
   const backdrop = document.querySelector('.modal-backdrop');
   if (backdrop) backdrop.classList.remove('show');
+}
+
+export function confirmExternal(url) {
+  return new Promise((resolve) => {
+    const dom = `
+      <div style="display:flex; align-items:center; gap:.8rem; margin-bottom:.6rem">
+        <div class="badge">!</div>
+        <div>
+          <div style="font-weight:700; font-size:1.1rem">You’re leaving GlassFlix</div>
+          <div style="color:var(--muted); font-size:.95rem">We’ll open: <span class="link-underline">${url}</span></div>
+        </div>
+      </div>
+      <div style="display:flex; justify-content:flex-end; gap:.5rem">
+        <button class="btn" id="ext-cancel">Cancel</button>
+        <button class="btn btn-primary" id="ext-continue">Continue</button>
+      </div>`;
+    showModal(dom);
+    const b = document.querySelector('.modal-backdrop');
+    const done = (val) => { hideModal(); resolve(val); };
+    b.querySelector('#ext-cancel').addEventListener('click', () => done(false));
+    b.querySelector('#ext-continue').addEventListener('click', () => done(true));
+  });
 }
