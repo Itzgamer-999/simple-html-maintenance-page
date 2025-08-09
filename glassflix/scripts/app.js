@@ -1,6 +1,6 @@
 import { getAll } from './store.js';
 import { unreadCount as notifCount, renderCenter } from './notifications.js';
-import { showModal } from './ui.js';
+import { showModal, confirmExternal } from './ui.js';
 import { subscribeSettings } from './settings.js';
 import { startNotifications } from './notifications.js';
 
@@ -121,6 +121,22 @@ function registerSW() {
   }
 }
 
+function interceptExternalLinks() {
+  document.addEventListener('click', (e) => {
+    const a = e.target.closest('a');
+    if (!a) return;
+    const href = a.getAttribute('href');
+    if (!href || href.startsWith('#')) return;
+    try {
+      const url = new URL(href, location.href);
+      if (url.origin !== location.origin) {
+        e.preventDefault();
+        confirmExternal(url.href).then(ok => { if (ok) window.open(url.href, a.getAttribute('target') || '_blank'); });
+      }
+    } catch { /* ignore malformed */ }
+  }, true);
+}
+
 export function boot() {
   const theme = localStorage.getItem('theme');
   if (theme) document.documentElement.setAttribute('data-theme', theme);
@@ -132,6 +148,7 @@ export function boot() {
   startNotifications();
   startUptimeProbe();
   registerSW();
+  interceptExternalLinks();
 }
 
 // Auto-run
