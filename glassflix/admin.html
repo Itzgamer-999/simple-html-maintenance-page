@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Admin — GlassFlix</title>
+  <link rel="stylesheet" href="styles/theme.css" />
+  <link rel="stylesheet" href="styles/glass.css" />
+  <link rel="stylesheet" href="styles/layout.css" />
+</head>
+<body>
+  <header class="site-header"></header>
+
+  <main class="container" style="padding:1rem 0 2rem;">
+    <section class="section">
+      <h2>🛠️ Admin Panel</h2>
+      <div id="gate" class="content-glass" style="padding:1rem;">
+        <p>Enter admin PIN to continue.</p>
+        <input id="pin" class="pill" type="password" placeholder="PIN" />
+        <button id="enter" class="btn">Enter</button>
+        <div style="color:var(--muted); font-size:.9rem; margin-top:.4rem">Default PIN: 0000 (change below)</div>
+      </div>
+
+      <div id="panel" style="display:none">
+        <div class="grid-two">
+          <div class="content-glass">
+            <h3>Site Settings</h3>
+            <label class="filters" style="align-items:center; gap:.6rem">
+              <input id="maintenance" type="checkbox" /> Maintenance mode
+            </label>
+            <input id="maintenanceMessage" class="pill" placeholder="Maintenance message" />
+            <div style="height:.5rem"></div>
+            <label class="filters" style="align-items:center; gap:.6rem">
+              <input id="blockPopups" type="checkbox" /> Block popups (UI only)
+            </label>
+            <div style="height:.5rem"></div>
+            <label class="filters" style="align-items:center; gap:.6rem">
+              Default Theme: 
+              <select id="defaultTheme" class="pill">
+                <option value="dark">Dark</option>
+                <option value="light">Light</option>
+              </select>
+            </label>
+            <div style="height:.6rem"></div>
+            <button id="save-settings" class="btn btn-primary">Save Settings</button>
+          </div>
+          <div class="content-glass">
+            <h3>Push Notification</h3>
+            <input id="nTitle" class="pill" placeholder="Title" />
+            <input id="nMessage" class="pill" placeholder="Message" />
+            <select id="nLevel" class="pill">
+              <option value="info">info</option>
+              <option value="warning">warning</option>
+              <option value="alert">alert</option>
+            </select>
+            <div style="height:.6rem"></div>
+            <button id="send" class="btn">Send</button>
+          </div>
+        </div>
+
+        <div class="content-glass" style="margin-top:1rem">
+          <h3>Security</h3>
+          <input id="newPin" class="pill" type="password" placeholder="New PIN" />
+          <button id="save-pin" class="btn">Update PIN</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script type="module" src="./scripts/app.js"></script>
+  <script type="module" src="./scripts/admin.js"></script>
+</body>
+</html>

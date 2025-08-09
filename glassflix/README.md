@@ -20,7 +20,7 @@ firebase deploy
 
 ## Features
 - Glassmorphism UI, animations, and responsive layout
-- TMDB browse/search, details, cast, and recommendations
+- TMDB browse/search, details, cast, and recommendations (VidSrc embed)
 - VidSrc.xyz embedded player (sandboxed to block popups)
 - Watchlist via localStorage
 - Caching: API TTL cache + SW image caching

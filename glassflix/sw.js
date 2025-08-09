@@ -1,7 +1,7 @@
 const STATIC_CACHE = 'static-v1';
 const IMG_CACHE = 'img-v1';
 const STATIC_ASSETS = [
-  '/', '/index.html', '/styles/theme.css', '/styles/glass.css', '/styles/layout.css', '/styles/animations.css', '/assets/logo.svg'
+  '/', '/index.html', '/search.html', '/details.html', '/my-list.html', '/admin.html', '/status.html', '/styles/theme.css', '/styles/glass.css', '/styles/layout.css', '/styles/animations.css', '/assets/logo.svg'
 ];
 
 self.addEventListener('install', (e) => {
