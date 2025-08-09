@@ -71,10 +71,13 @@
                 <option value="critical">critical</option>
               </select>
               <input id="incStatus" class="pill" placeholder="Status (e.g., investigating, monitoring)" />
+              <label class="filters" style="align-items:center; gap:.6rem; margin-top:.4rem">
+                Schedule: <input id="incStart" class="pill" type="datetime-local" /> → <input id="incEnd" class="pill" type="datetime-local" />
+              </label>
               <div style="height:.6rem"></div>
               <button id="post-incident" class="btn btn-primary">Post Incident</button>
             </div>
-            <div id="inc-list" style="max-height:40vh; overflow:auto"></div>
+            <div id="inc-list" style="max-height:50vh; overflow:auto"></div>
           </div>
         </div>
 

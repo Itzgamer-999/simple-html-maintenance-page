@@ -42,16 +42,8 @@
         <div id="watch-panel" class="filters" style="margin:.5rem 0 .8rem">
           <div class="pill">Auto</div>
           <select id="episode-select" class="pill" title="Episode selector (TV only)"></select>
-          <button id="party-create" class="btn">Start Watch Party (beta)</button>
-          <input id="party-id" class="pill" placeholder="Room ID" style="width:160px" />
-          <button id="party-join" class="btn">Join</button>
         </div>
         <div id="player" class="player glass"></div>
-        <div id="party-chat" class="content-glass" style="margin-top:.6rem; display:none">
-          <div style="font-weight:700; margin-bottom:.4rem">Room Chat (beta)</div>
-          <div id="chat-log" style="max-height:200px; overflow:auto; margin-bottom:.4rem"></div>
-          <div class="filters"><input id="chat-name" class="pill" placeholder="Name"/><input id="chat-text" class="pill" placeholder="Message"/><button id="chat-send" class="btn">Send</button></div>
-        </div>
       </section>
       <section class="section">
         <h2>Cast</h2>
@@ -75,7 +67,6 @@
 
   <script type="module" src="./scripts/app.js"></script>
   <script type="module" src="./scripts/details.js"></script>
-  <script type="module" src="./scripts/party.js"></script>
   <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
 </body>
 </html>

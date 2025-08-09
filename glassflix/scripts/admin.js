@@ -24,39 +24,58 @@ function gate() {
 
 async function renderIncidents() {
   try {
-    const { db, collection, onSnapshot, query, orderBy, addDoc, serverTimestamp, deleteDoc, doc } = await getFirebase().then(({db}) => import('https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js').then(m => ({...m, db})));
+    const { db, collection, onSnapshot, query, orderBy, addDoc, serverTimestamp, deleteDoc, doc, updateDoc, arrayUnion, Timestamp } = await getFirebase().then(({db}) => import('https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js').then(m => ({...m, db})));
     const q = query(collection(db, 'incidents'), orderBy('createdAt', 'desc'));
     onSnapshot(q, (snap) => {
       const root = document.getElementById('inc-list');
       root.innerHTML = snap.docs.map(d => {
         const inc = d.data();
-        return `<div class="content-glass" style="margin:.4rem 0; padding:.6rem">
-            <div style="display:flex;justify-content:space-between;align-items:center"><div><span class="pill">${inc.severity}</span> <strong>${inc.title}</strong></div>
-            <button data-id="${d.id}" class="btn btn-secondary del">Delete</button></div>
-            <div style="color:var(--muted); font-size:.9rem; margin-top:.3rem">${inc.message}</div>
-            ${inc.status? `<div class="pill" style="margin-top:.3rem">${inc.status}</div>`:''}
+        const updates = (inc.updates || []).map(u => `<div style=\"color:var(--muted); font-size:.85rem; margin:.25rem 0\"><strong>${u.status}</strong> — ${u.message} <span style=\"opacity:.7\">(${u.time?.toDate?u.time.toDate().toLocaleString():''})</span></div>`).join('');
+        const schedule = inc.startAt?.toDate ? `Scheduled: ${inc.startAt.toDate().toLocaleString()} → ${inc.endAt?.toDate?inc.endAt.toDate().toLocaleString():''}` : '';
+        return `<div class=\"content-glass\" style=\"margin:.4rem 0; padding:.6rem\">
+            <div style=\"display:flex;justify-content:space-between;align-items:center\"><div><span class=\"pill\">${inc.severity}</span> <strong>${inc.title}</strong> ${inc.resolved?'<span class=\"pill\" style=\"margin-left:.3rem\">resolved</span>':''}</div>
+            <div>
+              <button data-id=\"${d.id}\" class=\"btn btn-secondary upd\">Add Update</button>
+              ${inc.resolved?'':`<button data-id=\"${d.id}\" class=\"btn btn-secondary res\">Resolve</button>`}
+              <button data-id=\"${d.id}\" class=\"btn btn-secondary del\">Delete</button>
+            </div></div>
+            <div style=\"color:var(--muted); font-size:.9rem; margin-top:.3rem\">${inc.message}</div>
+            ${schedule?`<div style=\"margin-top:.3rem\">${schedule}</div>`:''}
+            ${updates?`<div style=\"margin-top:.4rem\">${updates}</div>`:''}
           </div>`;
       }).join('');
       root.querySelectorAll('.del').forEach(btn => btn.addEventListener('click', async () => {
         await deleteDoc(doc(db, 'incidents', btn.dataset.id));
+      }));
+      root.querySelectorAll('.res').forEach(btn => btn.addEventListener('click', async () => {
+        await updateDoc(doc(db, 'incidents', btn.dataset.id), { resolved: true, resolvedAt: serverTimestamp(), status: 'resolved' });
+      }));
+      root.querySelectorAll('.upd').forEach(btn => btn.addEventListener('click', async () => {
+        const status = prompt('Status (e.g., investigating, monitoring, resolved)');
+        const message = prompt('Update message');
+        if (!status || !message) return;
+        await updateDoc(doc(db, 'incidents', btn.dataset.id), { updates: arrayUnion({ status, message, time: serverTimestamp() }), status });
       }));
     });
     document.getElementById('post-incident').addEventListener('click', async () => {
       const title = document.getElementById('incTitle').value.trim();
       const message = document.getElementById('incMessage').value.trim();
       const severity = document.getElementById('incSeverity').value;
-      const status = document.getElementById('incStatus').value.trim();
+      const status = document.getElementById('incStatus').value.trim() || 'investigating';
+      const startVal = document.getElementById('incStart').value;
+      const endVal = document.getElementById('incEnd').value;
+      const startAt = startVal ? Timestamp.fromDate(new Date(startVal)) : null;
+      const endAt = endVal ? Timestamp.fromDate(new Date(endVal)) : null;
       if (!title || !message) return alert('Title and message required');
-      await addDoc(collection(db, 'incidents'), { title, message, severity, status, createdAt: serverTimestamp() });
+      await addDoc(collection(db, 'incidents'), { title, message, severity, status, createdAt: serverTimestamp(), startAt, endAt, resolved: false, updates: [] });
       alert('Incident posted');
     });
-  } catch {
+  } catch (e) {
     document.getElementById('inc-list').innerHTML = '<div class="content-glass">Incidents unavailable (no Firebase).</div>';
   }
 }
 
 function initPanel() {
-  // settings
   subscribeSettings((s) => {
     document.getElementById('maintenance').checked = !!s.maintenance;
     document.getElementById('maintenanceMessage').value = s.maintenanceMessage || '';
@@ -76,7 +95,6 @@ function initPanel() {
     alert('Settings saved');
   });
 
-  // notifications
   document.getElementById('send').addEventListener('click', () => {
     const title = document.getElementById('nTitle').value.trim();
     const message = document.getElementById('nMessage').value.trim();
@@ -86,14 +104,12 @@ function initPanel() {
     alert('Notification sent');
   });
 
-  // pin
   document.getElementById('save-pin').addEventListener('click', () => {
     const np = (document.getElementById('newPin').value || '').trim();
     if (!np) return alert('Enter a new PIN');
     setPin(np); alert('PIN updated');
   });
 
-  // incidents
   renderIncidents();
 }
 
